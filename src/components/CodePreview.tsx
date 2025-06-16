@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FlexboxConfig, GridConfig, LayoutElement, LayoutMode } from './LayoutPlayground';
+import { FlexboxConfig, GridConfig, LayoutElement, LayoutMode, Theme } from './LayoutPlayground';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -9,6 +9,7 @@ interface CodePreviewProps {
   flexboxConfig: FlexboxConfig;
   gridConfig: GridConfig;
   elements: LayoutElement[];
+  theme: Theme;
 }
 
 export const CodePreview: React.FC<CodePreviewProps> = ({
@@ -16,6 +17,7 @@ export const CodePreview: React.FC<CodePreviewProps> = ({
   flexboxConfig,
   gridConfig,
   elements,
+  theme,
 }) => {
   const generateHTML = () => {
     return `<div class="container">
@@ -60,21 +62,49 @@ ${containerStyles}
 ${itemStyles}`;
   };
 
+  const getThemeClasses = () => {
+    switch (theme) {
+      case 'light':
+        return {
+          card: 'bg-white border-gray-200',
+          tabs: 'bg-gray-100',
+          tabActive: 'bg-white',
+          text: 'text-gray-900',
+        };
+      case 'blue':
+        return {
+          card: 'bg-blue-900 border-blue-700',
+          tabs: 'bg-blue-800',
+          tabActive: 'bg-blue-700',
+          text: 'text-blue-50',
+        };
+      default:
+        return {
+          card: 'bg-gray-800 border-gray-600',
+          tabs: 'bg-gray-700',
+          tabActive: 'bg-gray-600',
+          text: 'text-white',
+        };
+    }
+  };
+
+  const themeClasses = getThemeClasses();
+
   return (
     <div className="h-full flex flex-col">
       <Tabs defaultValue="css" className="h-full flex flex-col">
-        <TabsList className="grid w-full grid-cols-2 bg-gray-700">
-          <TabsTrigger value="html" className="text-white data-[state=active]:bg-gray-600">
+        <TabsList className={`grid w-full grid-cols-2 ${themeClasses.tabs}`}>
+          <TabsTrigger value="html" className={`${themeClasses.text} data-[state=active]:${themeClasses.tabActive}`}>
             HTML
           </TabsTrigger>
-          <TabsTrigger value="css" className="text-white data-[state=active]:bg-gray-600">
+          <TabsTrigger value="css" className={`${themeClasses.text} data-[state=active]:${themeClasses.tabActive}`}>
             CSS
           </TabsTrigger>
         </TabsList>
         
         <div className="flex-1 overflow-hidden">
           <TabsContent value="html" className="h-full m-0">
-            <Card className="h-full bg-gray-800 border-gray-600">
+            <Card className={`h-full ${themeClasses.card}`}>
               <CardContent className="p-4 h-full">
                 <pre className="text-sm text-green-400 font-mono overflow-auto h-full whitespace-pre-wrap">
                   {generateHTML()}
@@ -84,7 +114,7 @@ ${itemStyles}`;
           </TabsContent>
           
           <TabsContent value="css" className="h-full m-0">
-            <Card className="h-full bg-gray-800 border-gray-600">
+            <Card className={`h-full ${themeClasses.card}`}>
               <CardContent className="p-4 h-full">
                 <pre className="text-sm text-blue-400 font-mono overflow-auto h-full whitespace-pre-wrap">
                   {generateCSS()}
