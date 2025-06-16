@@ -6,6 +6,7 @@ import { LiveCodeEditor } from './LiveCodeEditor';
 import { LayoutHeader } from './LayoutHeader';
 import { Footer } from './Footer';
 import { SaveLayoutDialog } from './SaveLayoutDialog';
+import { LoadLayoutDialog } from './LoadLayoutDialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
@@ -153,17 +154,34 @@ export const LayoutPlayground = () => {
   const getCardClasses = () => {
     switch (theme) {
       case 'light':
-        return 'bg-white/90 backdrop-blur-sm border-gray-200 shadow-lg';
+        return 'bg-white/95 backdrop-blur-sm border-gray-200 shadow-lg text-gray-900';
       case 'blue':
-        return 'bg-blue-900/90 backdrop-blur-sm border-blue-700 shadow-xl';
+        return 'bg-blue-900/95 backdrop-blur-sm border-blue-700 shadow-xl text-blue-50';
       case 'purple':
-        return 'bg-purple-900/90 backdrop-blur-sm border-purple-700 shadow-xl';
+        return 'bg-purple-900/95 backdrop-blur-sm border-purple-700 shadow-xl text-purple-50';
       case 'sunset':
-        return 'bg-orange-900/90 backdrop-blur-sm border-orange-700 shadow-xl';
+        return 'bg-orange-900/95 backdrop-blur-sm border-orange-700 shadow-xl text-orange-50';
       case 'ocean':
-        return 'bg-teal-900/90 backdrop-blur-sm border-teal-700 shadow-xl';
+        return 'bg-teal-900/95 backdrop-blur-sm border-teal-700 shadow-xl text-teal-50';
       default:
-        return 'bg-gray-800/90 backdrop-blur-sm border-gray-700 shadow-xl';
+        return 'bg-gray-800/95 backdrop-blur-sm border-gray-700 shadow-xl text-white';
+    }
+  };
+
+  const getButtonClasses = () => {
+    switch (theme) {
+      case 'light':
+        return 'text-gray-700 hover:text-gray-900 bg-white/80 hover:bg-gray-100/80 border-gray-300';
+      case 'blue':
+        return 'text-blue-100 hover:text-blue-50 bg-blue-800/80 hover:bg-blue-700/80 border-blue-600';
+      case 'purple':
+        return 'text-purple-100 hover:text-purple-50 bg-purple-800/80 hover:bg-purple-700/80 border-purple-600';
+      case 'sunset':
+        return 'text-orange-100 hover:text-orange-50 bg-orange-800/80 hover:bg-orange-700/80 border-orange-600';
+      case 'ocean':
+        return 'text-teal-100 hover:text-teal-50 bg-teal-800/80 hover:bg-teal-700/80 border-teal-600';
+      default:
+        return 'text-gray-300 hover:text-white bg-gray-700/80 hover:bg-gray-600/80 border-gray-600';
     }
   };
 
@@ -289,15 +307,11 @@ ${html}
     localStorage.setItem('layout-playground-saves', JSON.stringify(layouts));
   };
 
-  const loadLayout = () => {
-    const saved = localStorage.getItem('layout-playground-save');
-    if (saved) {
-      const layoutData = JSON.parse(saved);
-      setMode(layoutData.mode);
-      setFlexboxConfig(layoutData.flexboxConfig);
-      setGridConfig(layoutData.gridConfig);
-      setElements(layoutData.elements);
-    }
+  const loadLayout = (layoutData: any) => {
+    setMode(layoutData.mode);
+    setFlexboxConfig(layoutData.flexboxConfig);
+    setGridConfig(layoutData.gridConfig);
+    setElements(layoutData.elements);
   };
 
   const applyPreset = (preset: any) => {
@@ -312,6 +326,8 @@ ${html}
   const handleApplyCode = (html: string, css: string) => {
     console.log('Applied code:', { html, css });
   };
+
+  const buttonClasses = getButtonClasses();
 
   return (
     <div className={`min-h-screen ${getThemeClasses()} transition-all duration-500`}>
@@ -341,7 +357,7 @@ ${html}
                   <Button
                     variant={mode === 'flexbox' ? 'default' : 'outline'}
                     onClick={() => setMode('flexbox')}
-                    className="flex-1 text-xs"
+                    className={`flex-1 text-xs ${mode !== 'flexbox' ? buttonClasses : ''}`}
                     size="sm"
                   >
                     {t.flexbox}
@@ -349,7 +365,7 @@ ${html}
                   <Button
                     variant={mode === 'grid' ? 'default' : 'outline'}
                     onClick={() => setMode('grid')}
-                    className="flex-1 text-xs"
+                    className={`flex-1 text-xs ${mode !== 'grid' ? buttonClasses : ''}`}
                     size="sm"
                   >
                     {t.grid}
@@ -358,10 +374,10 @@ ${html}
 
                 {/* Action Buttons */}
                 <div className="grid grid-cols-2 gap-1 text-xs">
-                  <Button onClick={addElement} size="sm" variant="outline" className="text-xs">
+                  <Button onClick={addElement} size="sm" variant="outline" className={`text-xs ${buttonClasses}`}>
                     {t.addElement}
                   </Button>
-                  <Button onClick={removeElement} size="sm" variant="outline" className="text-xs">
+                  <Button onClick={removeElement} size="sm" variant="outline" className={`text-xs ${buttonClasses}`}>
                     {t.removeElement}
                   </Button>
                 </div>
@@ -406,7 +422,7 @@ ${html}
                     <Button
                       variant={mode === 'flexbox' ? 'default' : 'outline'}
                       onClick={() => setMode('flexbox')}
-                      className="flex-1 transition-all duration-200"
+                      className={`flex-1 transition-all duration-200 ${mode !== 'flexbox' ? buttonClasses : ''}`}
                       size="sm"
                     >
                       {t.flexbox}
@@ -414,7 +430,7 @@ ${html}
                     <Button
                       variant={mode === 'grid' ? 'default' : 'outline'}
                       onClick={() => setMode('grid')}
-                      className="flex-1 transition-all duration-200"
+                      className={`flex-1 transition-all duration-200 ${mode !== 'grid' ? buttonClasses : ''}`}
                       size="sm"
                     >
                       {t.grid}
@@ -442,17 +458,19 @@ ${html}
                 {/* Action Buttons */}
                 <div className="p-3 space-y-2">
                   <div className="grid grid-cols-2 gap-2">
-                    <Button onClick={addElement} size="sm" variant="outline">
+                    <Button onClick={addElement} size="sm" variant="outline" className={buttonClasses}>
                       {t.addElement}
                     </Button>
-                    <Button onClick={removeElement} size="sm" variant="outline">
+                    <Button onClick={removeElement} size="sm" variant="outline" className={buttonClasses}>
                       {t.removeElement}
                     </Button>
                   </div>
                   
-                  <Button onClick={loadLayout} size="sm" variant="outline" className="w-full">
-                    {t.load}
-                  </Button>
+                  <LoadLayoutDialog onLoadLayout={loadLayout} language={language}>
+                    <Button size="sm" variant="outline" className={`w-full ${buttonClasses}`}>
+                      {t.load}
+                    </Button>
+                  </LoadLayoutDialog>
                 </div>
               </Card>
             </ResizablePanel>

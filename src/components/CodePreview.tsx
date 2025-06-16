@@ -66,9 +66,9 @@ ${itemStyles}`;
     switch (theme) {
       case 'light':
         return {
-          card: 'bg-white/90 backdrop-blur-sm border-gray-200',
+          card: 'bg-white/95 backdrop-blur-sm border-gray-200 text-gray-900',
           tabs: 'bg-gray-100/80',
-          tabActive: 'bg-white',
+          tabActive: 'bg-white text-gray-900',
           text: 'text-gray-900',
           htmlColor: 'text-blue-700',
           cssColor: 'text-purple-700',
@@ -78,9 +78,9 @@ ${itemStyles}`;
         };
       case 'blue':
         return {
-          card: 'bg-blue-900/90 backdrop-blur-sm border-blue-700',
+          card: 'bg-blue-900/95 backdrop-blur-sm border-blue-700 text-blue-50',
           tabs: 'bg-blue-800/80',
-          tabActive: 'bg-blue-700',
+          tabActive: 'bg-blue-700 text-blue-50',
           text: 'text-blue-50',
           htmlColor: 'text-green-300',
           cssColor: 'text-cyan-300',
@@ -90,9 +90,9 @@ ${itemStyles}`;
         };
       case 'purple':
         return {
-          card: 'bg-purple-900/90 backdrop-blur-sm border-purple-700',
+          card: 'bg-purple-900/95 backdrop-blur-sm border-purple-700 text-purple-50',
           tabs: 'bg-purple-800/80',
-          tabActive: 'bg-purple-700',
+          tabActive: 'bg-purple-700 text-purple-50',
           text: 'text-purple-50',
           htmlColor: 'text-green-300',
           cssColor: 'text-cyan-300',
@@ -102,9 +102,9 @@ ${itemStyles}`;
         };
       case 'sunset':
         return {
-          card: 'bg-orange-900/90 backdrop-blur-sm border-orange-700',
+          card: 'bg-orange-900/95 backdrop-blur-sm border-orange-700 text-orange-50',
           tabs: 'bg-orange-800/80',
-          tabActive: 'bg-orange-700',
+          tabActive: 'bg-orange-700 text-orange-50',
           text: 'text-orange-50',
           htmlColor: 'text-green-300',
           cssColor: 'text-cyan-300',
@@ -114,9 +114,9 @@ ${itemStyles}`;
         };
       case 'ocean':
         return {
-          card: 'bg-teal-900/90 backdrop-blur-sm border-teal-700',
+          card: 'bg-teal-900/95 backdrop-blur-sm border-teal-700 text-teal-50',
           tabs: 'bg-teal-800/80',
-          tabActive: 'bg-teal-700',
+          tabActive: 'bg-teal-700 text-teal-50',
           text: 'text-teal-50',
           htmlColor: 'text-green-300',
           cssColor: 'text-cyan-300',
@@ -126,9 +126,9 @@ ${itemStyles}`;
         };
       default:
         return {
-          card: 'bg-gray-800/90 backdrop-blur-sm border-gray-600',
+          card: 'bg-gray-800/95 backdrop-blur-sm border-gray-700 text-white',
           tabs: 'bg-gray-700/80',
-          tabActive: 'bg-gray-600',
+          tabActive: 'bg-gray-600 text-white',
           text: 'text-white',
           htmlColor: 'text-green-400',
           cssColor: 'text-blue-400',

@@ -2,9 +2,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Language, Theme } from './LayoutPlayground';
+import { LoadLayoutDialog } from './LoadLayoutDialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Palette, BookOpen, Settings, Save, Download, RotateCcw } from 'lucide-react';
+import { Palette, BookOpen, Settings, Save, Download, RotateCcw, Upload } from 'lucide-react';
 import { LearningTips } from './LearningTips';
 import { PresetTemplates } from './PresetTemplates';
 
@@ -16,7 +17,7 @@ interface LayoutHeaderProps {
   t: any;
   mode: 'flexbox' | 'grid';
   onSaveLayout: () => void;
-  onLoadLayout: () => void;
+  onLoadLayout: (layout: any) => void;
   onExportCode: () => void;
   onResetLayout: () => void;
   onApplyPreset: (preset: any) => void;
@@ -55,7 +56,7 @@ export const LayoutHeader: React.FC<LayoutHeaderProps> = ({
   const getButtonClasses = () => {
     switch (theme) {
       case 'light':
-        return 'text-gray-700 hover:text-gray-900 bg-gray-100/80 hover:bg-gray-200/80 border-gray-300';
+        return 'text-gray-700 hover:text-gray-900 bg-white/80 hover:bg-gray-100/80 border-gray-300';
       case 'blue':
         return 'text-blue-100 hover:text-blue-50 bg-blue-800/80 hover:bg-blue-700/80 border-blue-600';
       case 'purple':
@@ -149,6 +150,13 @@ export const LayoutHeader: React.FC<LayoutHeaderProps> = ({
             <Save className="w-3 h-3 lg:w-4 lg:h-4 mr-1" />
             <span className="hidden md:inline">{t.save}</span>
           </Button>
+
+          <LoadLayoutDialog onLoadLayout={onLoadLayout} language={language}>
+            <Button size="sm" variant="outline" className={`${buttonClasses} text-xs lg:text-sm px-2 lg:px-3`}>
+              <Upload className="w-3 h-3 lg:w-4 lg:h-4 mr-1" />
+              <span className="hidden md:inline">{t.load}</span>
+            </Button>
+          </LoadLayoutDialog>
           
           <Button onClick={onExportCode} size="sm" className="bg-blue-600 hover:bg-blue-700 text-white text-xs lg:text-sm px-2 lg:px-3">
             <Download className="w-3 h-3 lg:w-4 lg:h-4 mr-1" />
