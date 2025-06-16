@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { FlexboxConfig, GridConfig, LayoutElement, LayoutMode, Theme } from './LayoutPlayground';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface CodePreviewProps {
@@ -70,6 +70,8 @@ ${itemStyles}`;
           tabs: 'bg-gray-100',
           tabActive: 'bg-white',
           text: 'text-gray-900',
+          htmlColor: 'text-blue-700',
+          cssColor: 'text-purple-700',
         };
       case 'blue':
         return {
@@ -77,6 +79,8 @@ ${itemStyles}`;
           tabs: 'bg-blue-800',
           tabActive: 'bg-blue-700',
           text: 'text-blue-50',
+          htmlColor: 'text-green-300',
+          cssColor: 'text-cyan-300',
         };
       default:
         return {
@@ -84,6 +88,8 @@ ${itemStyles}`;
           tabs: 'bg-gray-700',
           tabActive: 'bg-gray-600',
           text: 'text-white',
+          htmlColor: 'text-green-400',
+          cssColor: 'text-blue-400',
         };
     }
   };
@@ -106,7 +112,7 @@ ${itemStyles}`;
           <TabsContent value="html" className="h-full m-0">
             <Card className={`h-full ${themeClasses.card}`}>
               <CardContent className="p-4 h-full">
-                <pre className="text-sm text-green-400 font-mono overflow-auto h-full whitespace-pre-wrap">
+                <pre className={`text-sm ${themeClasses.htmlColor} font-mono overflow-auto h-full whitespace-pre-wrap font-medium`}>
                   {generateHTML()}
                 </pre>
               </CardContent>
@@ -116,7 +122,7 @@ ${itemStyles}`;
           <TabsContent value="css" className="h-full m-0">
             <Card className={`h-full ${themeClasses.card}`}>
               <CardContent className="p-4 h-full">
-                <pre className="text-sm text-blue-400 font-mono overflow-auto h-full whitespace-pre-wrap">
+                <pre className={`text-sm ${themeClasses.cssColor} font-mono overflow-auto h-full whitespace-pre-wrap font-medium`}>
                   {generateCSS()}
                 </pre>
               </CardContent>

@@ -2,17 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { FlexboxControls } from './FlexboxControls';
 import { GridControls } from './GridControls';
 import { LayoutSandbox } from './LayoutSandbox';
-import { CodePreview } from './CodePreview';
+import { LiveCodeEditor } from './LiveCodeEditor';
 import { LayoutHeader } from './LayoutHeader';
-import { PresetTemplates } from './PresetTemplates';
-import { LearningTips } from './LearningTips';
 import { Footer } from './Footer';
+import { SaveLayoutDialog } from './SaveLayoutDialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Settings, BookOpen, Palette } from 'lucide-react';
+import { Code } from 'lucide-react';
 
 export type LayoutMode = 'flexbox' | 'grid';
 export type Language = 'en' | 'pt';
@@ -58,12 +55,15 @@ const translations = {
     load: 'Load Layout',
     presets: 'Presets',
     codePreview: 'Code Preview',
+    liveEditor: 'Live Editor',
     settings: 'Settings',
     tips: 'Learning Tips',
     themes: 'Themes',
     light: 'Light',
     dark: 'Dark',
     blue: 'Blue',
+    tipsDescription: 'Learn CSS tips and best practices',
+    presetsDescription: 'Choose from pre-built layout templates',
   },
   pt: {
     title: 'Playground Frontend',
@@ -78,12 +78,15 @@ const translations = {
     load: 'Carregar Layout',
     presets: 'Modelos',
     codePreview: 'Visualização do Código',
+    liveEditor: 'Editor Ao Vivo',
     settings: 'Configurações',
     tips: 'Dicas de Aprendizado',
     themes: 'Temas',
     light: 'Claro',
     dark: 'Escuro',
     blue: 'Azul',
+    tipsDescription: 'Aprenda dicas e melhores práticas de CSS',
+    presetsDescription: 'Escolha entre modelos de layout pré-construídos',
   }
 };
 
@@ -91,8 +94,8 @@ export const LayoutPlayground = () => {
   const [mode, setMode] = useState<LayoutMode>('flexbox');
   const [language, setLanguage] = useState<Language>('en');
   const [theme, setTheme] = useState<Theme>('dark');
-  const [showPresets, setShowPresets] = useState(false);
   const [showCode, setShowCode] = useState(true);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const [flexboxConfig, setFlexboxConfig] = useState<FlexboxConfig>({
     direction: 'row',
@@ -252,16 +255,20 @@ ${html}
     URL.revokeObjectURL(url);
   };
 
-  const saveLayout = () => {
+  const saveLayout = (name: string) => {
     const layoutData = {
+      name,
       mode,
       flexboxConfig,
       gridConfig,
       elements,
       timestamp: Date.now(),
     };
-    localStorage.setItem('layout-playground-save', JSON.stringify(layoutData));
-    console.log('Layout saved!');
+    
+    const saved = localStorage.getItem('layout-playground-saves') || '[]';
+    const layouts = JSON.parse(saved);
+    layouts.push(layoutData);
+    localStorage.setItem('layout-playground-saves', JSON.stringify(layouts));
   };
 
   const loadLayout = () => {
@@ -272,8 +279,20 @@ ${html}
       setFlexboxConfig(layoutData.flexboxConfig);
       setGridConfig(layoutData.gridConfig);
       setElements(layoutData.elements);
-      console.log('Layout loaded!');
     }
+  };
+
+  const applyPreset = (preset: any) => {
+    if (mode === 'flexbox') {
+      setFlexboxConfig(preset.flexboxConfig);
+    } else {
+      setGridConfig(preset.gridConfig);
+    }
+    setElements(preset.elements);
+  };
+
+  const handleApplyCode = (html: string, css: string) => {
+    console.log('Applied code:', { html, css });
   };
 
   return (
@@ -284,11 +303,17 @@ ${html}
         t={t}
         theme={theme}
         setTheme={setTheme}
+        mode={mode}
+        onSaveLayout={() => setShowSaveDialog(true)}
+        onLoadLayout={loadLayout}
+        onExportCode={exportCode}
+        onResetLayout={resetLayout}
+        onApplyPreset={applyPreset}
       />
       
       <ResizablePanelGroup direction="horizontal" className="h-[calc(100vh-140px)]">
         {/* Left Panel - Controls */}
-        <ResizablePanel defaultSize={25} minSize={20} className="flex flex-col">
+        <ResizablePanel defaultSize={20} minSize={15} className="flex flex-col">
           <Card className={`h-full ${getCardClasses()} border-0 rounded-none`}>
             {/* Mode Toggle */}
             <div className="p-3 border-b border-opacity-20">
@@ -338,75 +363,11 @@ ${html}
                 <Button onClick={removeElement} size="sm" variant="outline">
                   {t.removeElement}
                 </Button>
-                <Button onClick={resetLayout} size="sm" variant="outline">
-                  {t.reset}
-                </Button>
-                <Button onClick={exportCode} size="sm" className="bg-blue-600 hover:bg-blue-700">
-                  {t.export}
-                </Button>
               </div>
               
-              <div className="grid grid-cols-2 gap-2">
-                <Button onClick={saveLayout} size="sm" variant="outline">
-                  {t.save}
-                </Button>
-                <Button onClick={loadLayout} size="sm" variant="outline">
-                  {t.load}
-                </Button>
-              </div>
-
-              <div className="flex gap-2">
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <Settings className="w-4 h-4 mr-1" />
-                      {t.presets}
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>{t.presets}</SheetTitle>
-                      <SheetDescription>
-                        Choose from pre-built layout templates
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="mt-6">
-                      <PresetTemplates
-                        mode={mode}
-                        onApplyPreset={(preset) => {
-                          if (mode === 'flexbox') {
-                            setFlexboxConfig(preset.flexboxConfig);
-                          } else {
-                            setGridConfig(preset.gridConfig);
-                          }
-                          setElements(preset.elements);
-                        }}
-                        language={language}
-                      />
-                    </div>
-                  </SheetContent>
-                </Sheet>
-
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      <BookOpen className="w-4 h-4 mr-1" />
-                      {t.tips}
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>{t.tips}</SheetTitle>
-                      <SheetDescription>
-                        Learn CSS tips and best practices
-                      </SheetDescription>
-                    </SheetHeader>
-                    <div className="mt-6">
-                      <LearningTips language={language} mode={mode} />
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
+              <Button onClick={loadLayout} size="sm" variant="outline" className="w-full">
+                {t.load}
+              </Button>
             </div>
           </Card>
         </ResizablePanel>
@@ -414,7 +375,7 @@ ${html}
         <ResizableHandle />
 
         {/* Center Panel - Sandbox */}
-        <ResizablePanel defaultSize={50} minSize={30}>
+        <ResizablePanel defaultSize={55} minSize={30}>
           <Card className={`h-full ${getCardClasses()} border-0 rounded-none`}>
             <div className="p-4 h-full">
               <LayoutSandbox
@@ -436,7 +397,7 @@ ${html}
             <ResizablePanel defaultSize={25} minSize={20}>
               <Card className={`h-full ${getCardClasses()} border-0 rounded-none`}>
                 <div className="p-3 border-b border-opacity-20 flex justify-between items-center">
-                  <h3 className="font-semibold">{t.codePreview}</h3>
+                  <h3 className="font-semibold">{t.liveEditor}</h3>
                   <Button
                     size="sm"
                     variant="ghost"
@@ -446,12 +407,14 @@ ${html}
                   </Button>
                 </div>
                 <div className="h-[calc(100%-60px)]">
-                  <CodePreview
+                  <LiveCodeEditor
                     mode={mode}
                     flexboxConfig={flexboxConfig}
                     gridConfig={gridConfig}
                     elements={elements}
                     theme={theme}
+                    language={language}
+                    onApplyCode={handleApplyCode}
                   />
                 </div>
               </Card>
@@ -463,11 +426,19 @@ ${html}
         {!showCode && (
           <div className="fixed bottom-20 right-4 z-10">
             <Button onClick={() => setShowCode(true)}>
-              {t.codePreview}
+              <Code className="w-4 h-4 mr-1" />
+              {t.liveEditor}
             </Button>
           </div>
         )}
       </ResizablePanelGroup>
+
+      <SaveLayoutDialog
+        isOpen={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+        onSave={saveLayout}
+        language={language}
+      />
 
       <Footer />
     </div>
